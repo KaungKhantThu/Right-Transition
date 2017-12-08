@@ -14,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.content)
     CoordinatorLayout contentView;
 
+    private Animation animMainStart, animMainEnd;
+
     private static final float END_SCALE = 0.7f;
 
     @Override
@@ -43,23 +47,33 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//        getSupportActionBar().setDisplayShowHomeEnabled(false);
+
+        animMainStart = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.start);
+        animMainEnd = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.end);
 
         drawerLayout.setScrimColor(Color.TRANSPARENT);
+
+//        drawerLayout.setStatusBarBackground(R.color.primary);
         drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                                            @Override
-                                           public void onDrawerSlide(View drawer, float slideOffset) {
+                                           public void onDrawerSlide(View drawerView, float slideOffset) {
 
-                                               float min = 0.9f;
-                                               float max = 1.0f;
-                                               float scaleFactor = (max - ((max - min) * slideOffset));
-                                               contentView.setScaleX(scaleFactor * (-2.5f));
-                                               contentView.setScaleY(scaleFactor);
+                                           }
+
+                                           @Override
+                                           public void onDrawerOpened(View drawerView) {
+                                               contentView.startAnimation(animMainStart);
                                            }
 
                                            @Override
                                            public void onDrawerClosed(View drawerView) {
+                                               contentView.startAnimation(animMainEnd);
+                                           }
+
+                                           @Override
+                                           public void onDrawerStateChanged(int newState) {
                                            }
                                        }
         );
@@ -84,9 +98,6 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.END);
-                return true;
             case R.id.btnMyMenu:
                 drawerLayout.openDrawer(GravityCompat.END);
                 return true;
